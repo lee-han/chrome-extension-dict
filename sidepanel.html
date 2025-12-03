@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    html, body {
+      height: 100%;
+      overflow: hidden;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+    .tabs {
+      display: flex;
+      background: #6366f1;
+      height: 36px;
+    }
+    .tab {
+      flex: 1;
+      border: none;
+      background: transparent;
+      color: rgba(255,255,255,0.7);
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .tab:hover {
+      background: rgba(255,255,255,0.1);
+    }
+    .tab.active {
+      color: white;
+      background: rgba(255,255,255,0.2);
+    }
+    .iframe-container {
+      height: calc(100% - 36px);
+      position: relative;
+    }
+    iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+      position: absolute;
+      top: 0;
+      left: 0;
+    }
+    iframe.hidden {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="tabs">
+    <button class="tab active" data-target="dict">한국학 웹 사전</button>
+    <button class="tab" data-target="chronology">동양연표</button>
+  </div>
+  <div class="iframe-container">
+    <iframe id="dict" src="https://dict.hanhub.click/?embed=true"></iframe>
+    <iframe id="chronology" class="hidden" src="https://chronology.hanhub.click/?embed=true"></iframe>
+  </div>
+  <script src="sidepanel.js"></script>
+</body>
+</html>
