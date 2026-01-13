@@ -3,7 +3,7 @@
   "name": "한국학 공구서",
   "version": "1.1",
   "description": "동양연표 + 한국학 웹 사전(한어대사전, 이두, 한의학 용어 등) + 한자입력기",
-  "permissions": ["sidePanel", "activeTab"],
+  "permissions": ["sidePanel"],
   "side_panel": {
     "default_path": "sidepanel.html"
   },
