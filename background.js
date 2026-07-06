@@ -1,4 +1,6 @@
 const CONTEXT_MENU_ID_DICT = 'hanhub_search_dict';
+const CONTENT_SCRIPT_ID = 'hanhub_selection_tooltip';
+const HOST_ORIGIN_PATTERN = '<all_urls>';
 const SETTINGS_KEY = 'settings';
 const DEFAULT_SETTINGS = {
   selectionTooltipEnabled: false,
@@ -21,6 +23,30 @@ async function syncContextMenu() {
   });
 }
 
+async function syncContentScript() {
+  const settings = await readSettings();
+  const hasHostPermission = await chrome.permissions.contains({
+    origins: [HOST_ORIGIN_PATTERN]
+  });
+  const shouldEnable = settings.selectionTooltipEnabled && hasHostPermission;
+
+  const registered = await chrome.scripting.getRegisteredContentScripts({
+    ids: [CONTENT_SCRIPT_ID]
+  });
+  const isRegistered = registered.length > 0;
+
+  if (shouldEnable && !isRegistered) {
+    await chrome.scripting.registerContentScripts([{
+      id: CONTENT_SCRIPT_ID,
+      matches: [HOST_ORIGIN_PATTERN],
+      js: ['content.js'],
+      runAt: 'document_idle'
+    }]);
+  } else if (!shouldEnable && isRegistered) {
+    await chrome.scripting.unregisterContentScripts({ ids: [CONTENT_SCRIPT_ID] });
+  }
+}
+
 async function stashAndOpen(tabId, target, value) {
   await chrome.storage.session.set({
     pendingSearch: { target, value, at: Date.now() }
@@ -36,16 +62,22 @@ async function stashAndOpen(tabId, target, value) {
 chrome.runtime.onInstalled.addListener(() => {
   chrome.sidePanel.setOptions({ enabled: true });
   syncContextMenu();
+  syncContentScript();
 });
 
 chrome.runtime.onStartup.addListener(() => {
   syncContextMenu();
+  syncContentScript();
 });
 
 chrome.storage.onChanged.addListener((changes, area) => {
   if (area !== 'sync' || !changes[SETTINGS_KEY]) return;
   syncContextMenu();
+  syncContentScript();
 });
+
+chrome.permissions.onAdded.addListener(() => syncContentScript());
+chrome.permissions.onRemoved.addListener(() => syncContentScript());
 
 chrome.action.onClicked.addListener(async (tab) => {
   await chrome.sidePanel.open({ tabId: tab.id });
