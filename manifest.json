@@ -1,15 +1,27 @@
 {
   "manifest_version": 3,
   "name": "한국학 공구서",
-  "version": "1.1",
-  "description": "동양연표 + 한국학 웹 사전(한어대사전, 이두, 한의학 용어 등) + 한자입력기",
-  "permissions": ["sidePanel"],
+  "version": "1.2",
+  "description": "한국학 웹사전·동양연표·한자입력기를 사이드패널로 제공하며, 웹페이지에서 텍스트를 드래그하거나 우클릭하여 바로 조회할 수 있습니다.",
+  "permissions": ["sidePanel", "contextMenus", "storage"],
+  "host_permissions": ["<all_urls>"],
   "side_panel": {
     "default_path": "sidepanel.html"
+  },
+  "options_ui": {
+    "page": "options.html",
+    "open_in_tab": false
   },
   "background": {
     "service_worker": "background.js"
   },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js"],
+      "run_at": "document_idle"
+    }
+  ],
   "icons": {
     "48": "icon48.png",
     "128": "icon128.png"
